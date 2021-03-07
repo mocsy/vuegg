@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 /**
  * Saves the current vuegg project definition in the specify repository
  *
@@ -11,7 +9,10 @@ import axios from 'axios'
  */
 async function saveVueggProject (project, owner, repo, token) {
   try {
-    return await axios.post('/api/project', { project, owner, repo, token })
+    return await fetch('/api/project', {
+      method: 'POST',
+      body: JSON.stringify({ project, owner, repo, token })
+    }).then(response => response.json())
   } catch (e) {
     console.error(e)
     return false
@@ -28,7 +29,7 @@ async function saveVueggProject (project, owner, repo, token) {
  */
 async function getVueggProject (owner, repo, token) {
   try {
-    return await axios.get('/api/project', { params: { owner, repo, token } })
+    return await fetch('/api/project?' + new URLSearchParams({ owner, repo, token }))
   } catch (e) {
     console.error(e)
     return false
@@ -43,7 +44,10 @@ async function getVueggProject (owner, repo, token) {
  */
 async function generateVueSources (project) {
   try {
-    return await axios.post('/api/generate', project, {responseType: 'blob'})
+    return await fetch('/api/generate', {
+      method: 'POST',
+      body: JSON.stringify(project)
+    }).then(response => response.blob())
   } catch (e) {
     console.error(e)
     return false

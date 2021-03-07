@@ -1,5 +1,4 @@
 import open from 'oauth-open'
-import axios from 'axios'
 import shortid from 'shortid'
 import promisify from 'es6-promisify'
 
@@ -47,8 +46,10 @@ async function authorizeUser () {
 
 async function _getAccessToken (code) {
   try {
-    let resp = await axios.post('/api/get-access-token', { code: code })
-    return resp.data
+    return await fetch('/api/get-access-token', {
+      method: 'POST',
+      body: JSON.stringify({ code: code })
+    }).then(response => response.text())
   } catch (e) {
     console.error(e)
     return false
@@ -63,12 +64,11 @@ async function _getAccessToken (code) {
  */
 async function getAuthenticatedUser (token) {
   try {
-    let resp = await axios.get('https://api.github.com/user', {
+    return await fetch('https://api.github.com/user', {
       headers: {
         'Authorization': 'bearer '.concat(token)
       }
-    })
-    return resp.data
+    }).then(response => response.json())
   } catch (e) {
     console.error(e)
     return false
